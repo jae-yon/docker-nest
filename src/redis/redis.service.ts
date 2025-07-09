@@ -1,8 +1,9 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import Redis from 'ioredis';
 
 @Injectable()
 export class RedisService implements OnModuleInit, OnModuleDestroy{
+  private readonly logger = new Logger(RedisService.name);
   private redis: Redis;
 
   async onModuleInit() {
@@ -14,31 +15,33 @@ export class RedisService implements OnModuleInit, OnModuleDestroy{
     });
 
     this.redis.on('connect', () => {
-      console.log('Redis connected successfully');
+      this.logger.log('Redis connected successfully');
     });
 
     this.redis.on('error', (err) => {
-      console.error('Redis Client Error:', err);
+      this.logger.error('Redis Client Error:', err);
     });
 
     this.redis.on('ready', () => {
-      console.log('Redis client is ready');
+      this.logger.log('Redis client is ready');
     });
 
     this.redis.on('close', () => {
-      console.log('Redis connection closed');
+      this.logger.log('Redis connection closed');
     });
   }
 
   async onModuleDestroy() {
     await this.redis.quit();
   }
-  // Redis 연결 상태 확인
+  
   async ping(): Promise<string> {
+    this.logger.log('Pinging Redis server...');
     return await this.redis.ping();
   }
-  // Redis 서버 정보 조회
+  
   async info(): Promise<string> {
+    this.logger.log('Fetching Redis server info...');
     return await this.redis.info();
   }
 }
