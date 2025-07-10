@@ -1,4 +1,4 @@
-name: Build test
+name: Application Test Workflow
 on:
   push:
     branches: [ '*' ]
@@ -47,3 +47,8 @@ jobs:
     
     - name: Build application
       run: npm run build
+
+    - name: Build Docker image
+      run: |
+        docker build -t myapp:latest .
+        docker tag myapp:latest myapp:${{ github.sha }}
