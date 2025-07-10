@@ -1,0 +1,49 @@
+name: Application Deploy Workflow
+on:
+  push:
+    branches: [ 'main' ]
+  pull_request:
+    branches: [ 'main' ]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Deploy to server
+      uses: appleboy/ssh-action@master
+      with:
+        username: ${{ secrets.USERNAME }}
+        host: ${{ secrets.HOST }}
+        port: ${{ secrets.PORT }}
+        key: ${{ secrets.SSH_KEY }}
+        passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
+        script: |
+          echo "🚀 배포 시작"
+
+          if [ ! -d ${{ secrets.DEPLOY_PATH }} ]; then
+            echo "📁 디렉토리 생성"
+            mkdir -p ${{ secrets.DEPLOY_PATH }}
+          fi
+
+          echo "📁 디렉토리 이동"
+          cd ${{ secrets.DEPLOY_PATH }}
+
+          if [ ! -d ".git" ]; then
+            echo "🔄 깃 저장소 클론중..."
+            git clone https://github.com/jae-yon/docker-nest.git . || {
+              echo "❌ 깃 저장소 클론 실패"
+              exit 1
+            }
+          else
+            echo "🔄 깃 저장소 업데이트중..."
+            git pull origin main || {
+              echo "❌ 깃 저장소 업데이트 실패"
+              exit 1
+            }
+          fi
+
+          echo "📊 깃 상태 확인:"
+          git status
