@@ -1,0 +1,29 @@
+name: ${COMPOSE_PROJECT_NAME}
+services:
+  redis:
+      image: redis:7.2
+      container_name: ${COMPOSE_PROJECT_NAME:-myapp}_redis
+      ports:
+        - "6379:6379"
+      volumes:
+        - redis_data:/data
+      command: > 
+        redis-server 
+        --appendonly yes 
+        --protected-mode yes 
+        --requirepass "${REDIS_PASSWORD}" 
+        --bind 0.0.0.0
+      restart: unless-stopped
+      healthcheck:
+        test: ["CMD", "redis-cli", "auth", "${REDIS_PASSWORD}", "ping"]
+        interval: 10s
+        timeout: 3s
+        retries: 3
+      networks:
+        - backend
+volumes:
+  redis_data:
+
+networks:
+  backend:
+    driver: bridge
