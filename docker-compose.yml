@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ${DOCKER_COMPOSE_NAME:-myapp}:1.0
+    image: ${DOCKER_COMPOSE_NAME:-myapp}_test:1.0
     container_name: ${DOCKER_COMPOSE_NAME:-myapp}_test
     ports:
       - "${PORT:-5000}:5000"
