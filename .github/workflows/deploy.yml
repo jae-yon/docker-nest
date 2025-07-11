@@ -32,7 +32,7 @@ jobs:
 
           if [ ! -d ".git" ]; then
             echo "🔄 깃 저장소 클론중..."
-            git clone ${{ secrets.REPOSITORY_URL }} . || {
+            git clone https://github.com/jae-yon/docker-nest.git . || {
               echo "❌ 깃 저장소 클론 실패"
               exit 1
             }
