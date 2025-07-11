@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: ${DOCKER_COMPOSE_NAME:-myapp}:1.0
-    container_name: ${DOCKER_COMPOSE_NAME:-myapp}_app
+    container_name: ${DOCKER_COMPOSE_NAME:-myapp}_test
     ports:
       - "${PORT:-5000}:5000"
     depends_on:

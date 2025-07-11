@@ -58,3 +58,28 @@ jobs:
           EOF
 
           chmod 600 ${{ secrets.DEPLOY_PATH }}/.env
+
+          echo "📦 도커 컴포즈 실행중..."
+
+          docker compose down
+
+          echo "🔄 도커 이미지 빌드 및 실행중..."
+          docker compose up -d --build || {
+            echo "❌ 도커 컴포즈 실행 실패"
+            exit 1
+          }
+
+          sleep 10
+
+          docker system prune -f
+
+          echo "🐋 도커 컨테이너 상태 확인"
+          docker compose ps
+
+          echo "🐋 Docker 리소스 사용량:"
+          docker system df
+          
+          echo "📊 디스크 사용량:"
+          df -h
+
+          echo "🚀 배포 완료"
