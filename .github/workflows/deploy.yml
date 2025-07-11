@@ -15,7 +15,7 @@ jobs:
       with:
         username: ${{ secrets.USERNAME }}
         host: ${{ secrets.HOST }}
-        port: ${{ secrets.PORT }}
+        port: ${{ secrets.SSH_PORT }}
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
         script: |
@@ -46,3 +46,16 @@ jobs:
 
           echo "📊 깃 상태 확인:"
           git status
+
+          echo "🔑 환경변수 파일 생성중..."
+          cat > ${{ secrets.DEPLOY_PATH }}/.env <<EOF
+          PORT=${{ secrets.PORT }}
+          REDIS_HOST=${{ secrets.REDIS_HOST }}
+          REDIS_PORT=${{ secrets.REDIS_PORT }}
+          REDIS_VERSION=${{ secrets.REDIS_VERSION }}
+          REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+          MYSQL_URL=${{ secrets.MYSQL_URL }}
+          DOCKER_COMPOSE_NAME=${{ secrets.DOCKER_COMPOSE_NAME }}
+          EOF
+
+          chmod 600 ${{ secrets.DEPLOY_PATH }}/.env

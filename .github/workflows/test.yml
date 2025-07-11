@@ -50,3 +50,7 @@ jobs:
       run: |
         docker build -t myapp:latest .
         docker tag myapp:latest myapp:${{ github.sha }}
+
+        echo "Docker image built and tagged as myapp:${{ github.sha }}"
+        
+        docker images
