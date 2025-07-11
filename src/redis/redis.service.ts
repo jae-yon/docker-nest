@@ -17,6 +17,14 @@ export class RedisService implements OnModuleInit, OnModuleDestroy{
       port: redisConfig.port,
       password: redisConfig.password,
       db: redisConfig.db,
+      retryStrategy: (times) => {
+        const delay = Math.min(times * 50, 2000);
+        if (times > 10) {
+          this.logger.error('Redis reconnect attempts exhausted');
+          return null;
+        }
+        return delay;
+      }
     });
 
     this.redis.on('connect', () => {

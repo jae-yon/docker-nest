@@ -7,7 +7,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
   async onModuleInit() {
     await this.$connect();
-    this.logger.log('Connected to the MySQL server successfully');
+    this.logger.log('Prisma connected successfully');
   }
 
   async onModuleDestroy() {
