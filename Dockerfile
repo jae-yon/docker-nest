@@ -23,7 +23,7 @@ RUN npm ci --only=production
 
 COPY --from=build /app/dist ./dist
 
-# RUN apk add --no-cache curl
+RUN apk add --no-cache curl
 
 EXPOSE 5000
 
