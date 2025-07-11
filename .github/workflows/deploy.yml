@@ -52,7 +52,6 @@ jobs:
           PORT=${{ secrets.PORT }}
           REDIS_HOST=${{ secrets.REDIS_HOST }}
           REDIS_PORT=${{ secrets.REDIS_PORT }}
-          REDIS_VERSION=${{ secrets.REDIS_VERSION }}
           REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
           MYSQL_URL=${{ secrets.MYSQL_URL }}
           DOCKER_COMPOSE_NAME=${{ secrets.DOCKER_COMPOSE_NAME }}
