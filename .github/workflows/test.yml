@@ -1,7 +1,5 @@
 name: Application Test Workflow
 on:
-  push:
-    branches: [ '*' ]
   pull_request:
     branches: [ '*' ]
 jobs:
@@ -52,3 +50,7 @@ jobs:
       run: |
         docker build -t myapp:latest .
         docker tag myapp:latest myapp:${{ github.sha }}
+
+        echo "Docker image built and tagged as myapp:${{ github.sha }}"
+        
+        docker images
