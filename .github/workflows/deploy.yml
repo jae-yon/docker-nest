@@ -28,10 +28,11 @@ jobs:
 
           echo "📁 디렉토리 이동"
           cd ${{ secrets.DEPLOY_PATH }}
+          echo "📍 현재 디렉토리 : $(pwd)"
 
           if [ ! -d ".git" ]; then
             echo "🔄 깃 저장소 클론중..."
-            git clone https://github.com/jae-yon/docker-nest.git . || {
+            git clone ${{ secrets.REPOSITORY_URL }} . || {
               echo "❌ 깃 저장소 클론 실패"
               exit 1
             }
