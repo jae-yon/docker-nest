@@ -76,6 +76,12 @@ jobs:
           echo "🐋 도커 컨테이너 상태 확인"
           docker compose ps
 
+          echo "📜 애플리케이션 로그:"
+          docker logs ${{ secrets.DOCKER_COMPOSE_NAME }}_test || {
+            echo "❌ 도커 로그 확인 실패"
+            exit 1
+          }
+
           echo "🐋 Docker 리소스 사용량:"
           docker system df
           
