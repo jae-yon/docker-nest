@@ -1,10 +1,12 @@
+name: ${COMPOSE_PROJECT_NAME}
+
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ${DOCKER_COMPOSE_NAME:-myapp}_test:1.0
-    container_name: ${DOCKER_COMPOSE_NAME:-myapp}_test
+    image: myapp:1.0.0
+    container_name: ${COMPOSE_PROJECT_NAME:-myapp}_test
     ports:
       - "${PORT:-5000}:5000"
     depends_on:
@@ -33,7 +35,7 @@ services:
       - backend
   redis:
     image: redis:7.2
-    container_name: ${DOCKER_COMPOSE_NAME:-myapp}_redis
+    container_name: ${COMPOSE_PROJECT_NAME:-myapp}_redis
     ports:
       - "6379:6379"
     volumes:

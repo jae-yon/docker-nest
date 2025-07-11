@@ -54,7 +54,7 @@ jobs:
           REDIS_PORT=${{ secrets.REDIS_PORT }}
           REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
           MYSQL_URL=${{ secrets.MYSQL_URL }}
-          DOCKER_COMPOSE_NAME=${{ secrets.DOCKER_COMPOSE_NAME }}
+          COMPOSE_PROJECT_NAME=${{ secrets.COMPOSE_PROJECT_NAME }}
           EOF
 
           chmod 600 ${{ secrets.DEPLOY_PATH }}/.env
@@ -77,7 +77,7 @@ jobs:
           docker compose ps
 
           echo "📜 애플리케이션 로그:"
-          docker logs ${{ secrets.DOCKER_COMPOSE_NAME }}_test || {
+          docker logs ${{ secrets.COMPOSE_PROJECT_NAME }}_test || {
             echo "❌ 도커 로그 확인 실패"
             exit 1
           }

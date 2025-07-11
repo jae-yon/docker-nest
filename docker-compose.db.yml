@@ -1,7 +1,8 @@
+name: ${COMPOSE_PROJECT_NAME}
 services:
   mysql:
     image: mysql:8.4.5
-    container_name: ${DOCKER_COMPOSE_NAME:-myapp}_mysql
+    container_name: ${COMPOSE_PROJECT_NAME:-myapp}_mysql
     ports:
       - "3306:3306"
     volumes:
