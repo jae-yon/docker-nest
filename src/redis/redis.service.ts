@@ -16,13 +16,11 @@ export class RedisService implements OnModuleInit, OnModuleDestroy, OnApplicatio
   private pendingOperations = new Set<Promise<any>>();
   
   async onModuleInit() {
-    const redisConfig = this.configService.get('redis');
-    
     this.client = new Redis({
-      host: redisConfig.host,
-      port: redisConfig.port,
-      password: redisConfig.password,
-      db: redisConfig.db,
+      host: this.configService.get<string>('redis.host'),
+      port: this.configService.get<number>('redis.port'),
+      password: this.configService.get<string>('redis.password'),
+      db: this.configService.get<number>('redis.db'),
       retryStrategy: (times) => {
         const delay = Math.min(times * 50, 2000);
         if (times > 10) {
