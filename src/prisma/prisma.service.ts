@@ -87,9 +87,4 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       this.pendingOperations.delete(operation);
     }
   }
-
-  async info(): Promise<string> {
-    this.logger.log('Fetching Prisma client info...');
-    return this.trackOperation(this.$queryRaw`SELECT version();`);
-  }
 }

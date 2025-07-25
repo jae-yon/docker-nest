@@ -104,16 +104,4 @@ export class RedisService implements OnModuleInit, OnModuleDestroy, OnApplicatio
     operation.finally(() => this.pendingOperations.delete(operation));
     return operation;
   }
-  
-  async ping(): Promise<string> {
-    this.logger.log('Pinging Redis server...');
-    // return await this.client.ping();
-    return this.trackOperation(this.client.ping());
-  }
-  
-  async info(): Promise<string> {
-    this.logger.log('Fetching Redis server info...');
-    // return await this.client.info();
-    return this.trackOperation(this.client.info());
-  }
 }
