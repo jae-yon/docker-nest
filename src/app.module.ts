@@ -8,6 +8,7 @@ import { RedisModule } from './redis/redis.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 import appConfig from './config/app.config';
+import mailConfig from './config/mail.config';
 import redisConfig from './config/redis.config';
 
 @Module({
@@ -17,6 +18,7 @@ import redisConfig from './config/redis.config';
       isGlobal: true,
       load: [
         appConfig,
+        mailConfig,
         redisConfig
       ]
     }),
