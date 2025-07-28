@@ -1,4 +1,5 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import * as nodemailer from 'nodemailer';
 
@@ -9,6 +10,7 @@ export class MailService implements OnModuleInit{
   constructor(
     @Inject('MAIL_TRANSPORTER')
     private readonly transporter: nodemailer.Transporter,
+    private readonly configService: ConfigService,
   ) {}
 
   async onModuleInit() {
@@ -23,6 +25,22 @@ export class MailService implements OnModuleInit{
     } catch (error) {
       console.error('Mail connection failed:', error);
       return false;
+    }
+  }
+
+  async sendMail(to: string, subject: string, html: string) {
+    try {
+      const info = await this.transporter.sendMail({
+        from: this.configService.get<string>('mail.auth.user'),
+        to,
+        subject,
+        html,
+      });
+      this.logger.log(`Email sent successfully: ${info.messageId}`);
+      return info;
+    } catch (error) {
+      this.logger.error('Failed to send email:', error.message);
+      throw error;
     }
   }
 }
