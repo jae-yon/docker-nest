@@ -14,11 +14,8 @@ import * as nodemailer from 'nodemailer';
         return nodemailer.createTransport({
           host: configService.get('mail.host'),
           port: configService.get('mail.port'),
-          secure: false,
-          auth: {
-            user: configService.get('mail.user'),
-            pass: configService.get('mail.pass'),
-          }
+          secure: configService.get('mail.secure'),
+          auth: configService.get('mail.auth')
         });
       },
       inject: [ConfigService],
