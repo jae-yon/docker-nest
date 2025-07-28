@@ -11,7 +11,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
   private pendingOperations = new Set<Promise<any>>();
   // 재시도 관련 변수
   private retries = 0;
-  private readonly maxRetries = 5;
+  private readonly maxRetries = 3;
   private readonly retryDelay = 2000;
 
   async onModuleInit() {
