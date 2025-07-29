@@ -23,7 +23,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy, OnApplicatio
       db: this.configService.get<number>('redis.db'),
       retryStrategy: (times) => {
         const delay = Math.min(times * 50, 2000);
-        if (times > 10) {
+        if (times > 3) {
           this.logger.error('Redis reconnect attempts exhausted');
           return null;
         }
