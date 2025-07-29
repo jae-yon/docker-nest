@@ -1,6 +1,9 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import * as fs from 'fs';
+import * as path from 'path';
+import * as handlebars from 'handlebars';
 import * as nodemailer from 'nodemailer';
 
 @Injectable()
@@ -17,7 +20,7 @@ export class MailService implements OnModuleInit{
     await this.verifyConnection();
   }
 
-  async verifyConnection(): Promise<boolean> {
+  private async verifyConnection(): Promise<boolean> {
     try {
       await this.transporter.verify();
       this.logger.log('Mail connection verified successfully');
@@ -28,10 +31,23 @@ export class MailService implements OnModuleInit{
     }
   }
 
-  async sendMail(to: string, subject: string, html: string) {
+  async renderTemplate(templateName: string, context: any): Promise<string> {
+    const templatePath = path.join(__dirname, 'templates', `${templateName}.hbs`);
     try {
+      const templateContent = fs.readFileSync(templatePath, 'utf8');
+      const compiledTemplate = handlebars.compile(templateContent);
+      return compiledTemplate(context);
+    } catch (error) {
+      this.logger.error(`Error rendering template ${templateName}:`, error.message);
+      throw error;
+    }
+  }
+
+  async sendMail(to: string, subject: string, templateName: string, context: any): Promise<nodemailer.SentMessageInfo> {
+    try {
+      const html = await this.renderTemplate(templateName, context);
       const info = await this.transporter.sendMail({
-        from: this.configService.get<string>('mail.auth.user'),
+        from: `"Our Awesome Service" <${this.configService.get<string>('mail.auth.user')}>`,
         to,
         subject,
         html,
