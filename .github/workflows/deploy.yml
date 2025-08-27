@@ -31,3 +31,22 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/myapp:latest
             ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.sha }}
+
+      # 4. 서버 배포
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          username: ${{ secrets.SSH_USERNAME }}
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
+          script: |
+            echo "🐳 도커 이미지:"
+            docker images
+            
+            echo "🛠️ 컨테이너 상태:"
+            docker ps
+
+            echo "📊 디스크 사용량:"
+            df -h
