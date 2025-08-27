@@ -17,45 +17,58 @@ export class MailService implements OnModuleInit{
   ) {}
 
   async onModuleInit() {
-    await this.verifyConnection();
-  }
-
-  private async verifyConnection(): Promise<boolean> {
     try {
       await this.transporter.verify();
       this.logger.log('Mail connection verified successfully');
       return true;
     } catch (error) {
-      console.error('Mail connection failed:', error);
+      this.logger.error(`Mail connection failed: ${error}`);
       return false;
     }
   }
 
-  async renderTemplate(templateName: string, context: any): Promise<string> {
-    const templatePath = path.join(__dirname, 'templates', `${templateName}.hbs`);
+  // 이메일 형식 검증
+  private async isValidEmail(email: string): Promise<boolean> {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  // 템플릿 생성
+  private async renderTemplate(templateName: string, context: any): Promise<string> {
+    const templatePath = path.join('dist/assets', 'templates', `${templateName}.hbs`);
     try {
       const templateContent = fs.readFileSync(templatePath, 'utf8');
       const compiledTemplate = handlebars.compile(templateContent);
       return compiledTemplate(context);
     } catch (error) {
-      this.logger.error(`Error rendering template ${templateName}:`, error.message);
+      this.logger.error(`Error rendering template ${templateName}: ${error.message}`);
       throw error;
     }
   }
 
-  async sendMail(to: string, subject: string, templateName: string, context: any): Promise<nodemailer.SentMessageInfo> {
+  // 테스트 메일 발송
+  async sendTestMail(email: string, name: string): Promise<nodemailer.SentMessageInfo> {
+    const context = {
+      name,
+      timestamp: new Date().toISOString(),
+    }
+
+    const html = await this.renderTemplate('test', context);
+
     try {
-      const html = await this.renderTemplate(templateName, context);
       const info = await this.transporter.sendMail({
-        from: `"Our Awesome Service" <${this.configService.get<string>('mail.auth.user')}>`,
-        to,
-        subject,
+        from: 'Jae Young Kim',
+        to: email,
+        subject: '[Test Email]',
         html,
       });
+
       this.logger.log(`Email sent successfully: ${info.messageId}`);
+
       return info;
     } catch (error) {
       this.logger.error('Failed to send email:', error.message);
+
       throw error;
     }
   }
