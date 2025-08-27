@@ -5,7 +5,7 @@
   "compilerOptions": {
     "assets": [
       {
-        "include": "mail/templates/**/*",
+        "include": "assets/**/*",
         "outDir": "dist"
       }
     ],
