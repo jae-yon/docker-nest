@@ -6,14 +6,9 @@ services:
       context: .
       dockerfile: Dockerfile
     image: myapp:1.0.0
-    container_name: ${COMPOSE_PROJECT_NAME:-myapp}_test
+    container_name: myapp
     ports:
       - "${PORT:-5000}:5000"
-    # depends_on:
-    #   redis:
-    #     condition: service_healthy
-    #   mysql:
-    #     condition: service_healthy
     environment:
       PORT: ${PORT:-5000}
       REDIS_HOST: redis
@@ -23,7 +18,6 @@ services:
     command: >
       sh -c "
         npm run prisma:deploy
-        npm run prisma:generate
         npm run start:prod
       "
     restart: no
