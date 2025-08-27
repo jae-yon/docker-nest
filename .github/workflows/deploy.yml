@@ -1,91 +1,33 @@
-name: Application Deploy Workflow
+name: Application Build and Deploy Workflow
+
 on:
   push:
     branches: [ 'main' ]
+  pull_request:
+    branches: [ 'main' ]
+  workflow_dispatch:
+
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      # 1. 저장소 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Deploy to server
-      uses: appleboy/ssh-action@master
-      with:
-        username: ${{ secrets.USERNAME }}
-        host: ${{ secrets.HOST }}
-        port: ${{ secrets.SSH_PORT }}
-        key: ${{ secrets.SSH_KEY }}
-        passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
-        script: |
-          echo "🚀 배포 시작"
+      # 2. 도커 허브 로그인
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-          if [ ! -d ${{ secrets.DEPLOY_PATH }} ]; then
-            echo "📁 디렉토리 생성"
-            mkdir -p ${{ secrets.DEPLOY_PATH }}
-          fi
-
-          echo "📁 디렉토리 이동"
-          cd ${{ secrets.DEPLOY_PATH }}
-          echo "📍 현재 디렉토리 : $(pwd)"
-
-          if [ ! -d ".git" ]; then
-            echo "🔄 깃 저장소 클론중..."
-            git clone https://github.com/jae-yon/docker-nest.git . || {
-              echo "❌ 깃 저장소 클론 실패"
-              exit 1
-            }
-          else
-            echo "🔄 깃 저장소 업데이트중..."
-            git pull origin main || {
-              echo "❌ 깃 저장소 업데이트 실패"
-              exit 1
-            }
-          fi
-
-          echo "📊 깃 상태 확인:"
-          git status
-
-          echo "🔑 환경변수 파일 생성중..."
-          cat > ${{ secrets.DEPLOY_PATH }}/.env <<EOF
-          PORT=${{ secrets.PORT }}
-          REDIS_HOST=${{ secrets.REDIS_HOST }}
-          REDIS_PORT=${{ secrets.REDIS_PORT }}
-          REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
-          MYSQL_URL=${{ secrets.MYSQL_URL }}
-          COMPOSE_PROJECT_NAME=${{ secrets.COMPOSE_PROJECT_NAME }}
-          EOF
-
-          chmod 600 ${{ secrets.DEPLOY_PATH }}/.env
-
-          # echo "📦 도커 컴포즈 실행중..."
-
-          # docker compose down
-
-          # echo "🔄 도커 이미지 빌드 및 실행중..."
-          # docker compose up -d --build || {
-          #   echo "❌ 도커 컴포즈 실행 실패"
-          #   exit 1
-          # }
-
-          # sleep 10
-
-          # docker system prune -f
-
-          # echo "🐋 도커 컨테이너 상태 확인"
-          # docker compose ps
-
-          # echo "📜 애플리케이션 로그:"
-          # docker logs ${{ secrets.COMPOSE_PROJECT_NAME }}_test || {
-          #   echo "❌ 도커 로그 확인 실패"
-          #   exit 1
-          # }
-
-          # echo "🐋 Docker 리소스 사용량:"
-          # docker system df
-          
-          # echo "📊 디스크 사용량:"
-          # df -h
-
-          echo "🚀 배포 완료"
+      # 3. 도커 이미지 빌드 & 푸시
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/myapp:latest
+            ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.sha }}
